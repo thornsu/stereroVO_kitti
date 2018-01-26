@@ -1,0 +1,45 @@
+%YAML:1.0
+
+#--------------------------------------------------------------------------------------------
+# Camera Parameters. Adjust them!
+#--------------------------------------------------------------------------------------------
+dataset_dir: /media/haosu/0ABF066B0ABF066B/KITTI_DATA/kitti/gray/dataset/sequences/00
+
+# Camera calibration and distortion parameters (OpenCV) 
+camera.fx: 718.856
+camera.fy: 718.856
+camera.cx: 607.1928
+camera.cy: 185.2157
+
+camera.k1: 0.0
+camera.k2: 0.0
+camera.p1: 0.0
+camera.p2: 0.0
+
+camera.width: 1241
+camera.height: 376
+
+# Camera frames per second 
+camera.fps: 10.0
+
+# stereo baseline times fx
+camera.bf: 386.1448
+
+
+
+#--------------------------------------------------------------------------------------------
+# ORB Parameters
+#-----------------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------------------
+# Viewer Parameters
+#--------------------------------------------------------------------------------------------
+number_of_features: 1500
+scale_factor: 1.1
+level_pyramid: 4
+match_ratio: 2.0
+max_num_lost: 10
+min_inliers: 30
+keyframe_rotation: 0.1
+keyframe_translation: 0.1
+map_point_erase_ratio: 0.1
