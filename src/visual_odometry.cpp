@@ -274,7 +274,7 @@ void VisualOdometry::addKeyFrame()
         cv::calcOpticalFlowPyrLK(curr_->img_left_,curr_->img_right_,pt1,pt2,status,error,cv::Size(8,8));
 
         // first key-frame, add all 3d points into map
-        for ( size_t i=0; i<pt2.size(); i++ )
+        for ( size_t i=0; i<keypoints_curr_left_.size(); i++ )
         {
             if(status[i])
             {
@@ -307,24 +307,34 @@ void VisualOdometry::addMapPoints()
     vector<bool> matched(keypoints_curr_left_.size(), false);
     for ( int index:match_2dkp_index_ )
         matched[index] = true;
-    for ( int i=0; i<keypoints_curr_left_.size(); i++ )
-    {
-        if ( matched[i] == true )   
+
+    vector<cv::Point2f>pt1,pt2;
+    for(auto &kp:keypoints_curr_left_)pt1.push_back(kp.pt);
+    vector<uchar>status;
+    vector<float>error;
+    cv::calcOpticalFlowPyrLK(curr_->img_left_,curr_->img_right_,pt1,pt2,status,error,cv::Size(8,8));
+
+    for ( int i=0; i<keypoints_curr_left_.size(); i++ ) {
+        if (matched[i] == true)
             continue;
-        double d =100;
+        if (status[i]) {
+        //double d =100;
         //double d = ref_->findDepth ( keypoints_curr_[i] );
-        if ( d<0 )
+            double disparity = pt2[i].x-pt1[i].x;
+            double d = ref_->camera_->baseline_/disparity;
+        if (d < 0)
             continue;
-        Vector3d p_world = ref_->camera_->pixel2world (
-            Vector2d ( keypoints_curr_left_[i].pt.x, keypoints_curr_left_[i].pt.y ),
-            curr_->T_c_w_, d
+        Vector3d p_world = ref_->camera_->pixel2world(
+                Vector2d(keypoints_curr_left_[i].pt.x, keypoints_curr_left_[i].pt.y),
+                curr_->T_c_w_, d
         );
         Vector3d n = p_world - ref_->getCamCenter();
         n.normalize();
         MapPoint::Ptr map_point = MapPoint::createMapPoint(
-            p_world, n, descriptors_curr_left_.row(i).clone(), curr_.get()
+                p_world, n, descriptors_curr_left_.row(i).clone(), curr_.get()
         );
-        map_->insertMapPoint( map_point );
+        map_->insertMapPoint(map_point);
+    }
     }
 }
 
